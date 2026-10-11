@@ -1,0 +1,45 @@
+##
+## DOCKER-COMPOSE.YAML
+##
+## Splunk Single Instance
+##
+## mkdir -p splunk-si && cd splunk-si
+## put docker-compose.yml here
+## create .env (all variables below are required, there are no defaults):
+##
+##   SPLUNK_VERSION=10.2
+##   SPLUNK_PASSWORD=ChangeMe-123456
+##   SPLUNK_WEB_PORT=28000
+##   SPLUNK_MGMT_PORT=28089
+##   SPLUNK_RECEIVE_PORT=29997
+##   SPLUNK_HEC_PORT=28088
+##
+## docker compose up -d
+## docker compose logs -f
+##
+
+services:
+  splunk-si:
+    image: splunk/splunk:${SPLUNK_VERSION:?set SPLUNK_VERSION in .env}
+    container_name: splunk-si
+    hostname: splunk-si
+    # Apple Silicon: needed if the image has no arm64 manifest (runs via Rosetta in OrbStack)
+    platform: linux/amd64
+    restart: unless-stopped
+    environment:
+      SPLUNK_START_ARGS: --accept-license
+      SPLUNK_GENERAL_TERMS: --accept-sgt-current-at-splunk-com
+      SPLUNK_PASSWORD: ${SPLUNK_PASSWORD:?set SPLUNK_PASSWORD in .env}
+    ports:
+      - '${SPLUNK_WEB_PORT:?set SPLUNK_WEB_PORT in .env}:8000'         # Splunk Web
+      - '${SPLUNK_MGMT_PORT:?set SPLUNK_MGMT_PORT in .env}:8089'       # Management port
+      - '${SPLUNK_RECEIVE_PORT:?set SPLUNK_RECEIVE_PORT in .env}:9997' # Forwarder receiving
+      - '${SPLUNK_HEC_PORT:?set SPLUNK_HEC_PORT in .env}:8088'         # HEC
+    volumes:
+      - splunk-si-etc:/opt/splunk/etc   # configs, apps, users, licenses
+      - splunk-si-var:/opt/splunk/var   # indexes, logs, KV Store (named volume: Splunk needs a supported Linux filesystem)
+
+volumes:
+  splunk-si-etc:
+  splunk-si-var:
+
