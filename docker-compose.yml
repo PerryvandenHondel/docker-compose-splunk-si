@@ -3,9 +3,7 @@
 ##
 ## Splunk Single Instance
 ##
-## mkdir -p splunk-si && cd splunk-si
-## put docker-compose.yml here
-## create .env (all variables below are required, there are no defaults):
+## Create .env (all variables below are required, there are no defaults):
 ##
 ##   SPLUNK_VERSION=10.2
 ##   SPLUNK_PASSWORD=ChangeMe-123456
@@ -14,9 +12,6 @@
 ##   SPLUNK_RECEIVE_PORT=29997
 ##   SPLUNK_HEC_PORT=28088
 ##
-## docker compose up -d
-## docker compose logs -f
-##
 
 services:
   splunk-si:
@@ -24,7 +19,7 @@ services:
     container_name: splunk-si
     hostname: splunk-si
     # Apple Silicon: needed if the image has no arm64 manifest (runs via Rosetta in OrbStack)
-    platform: linux/amd64
+    #platform: linux/amd64
     restart: unless-stopped
     environment:
       SPLUNK_START_ARGS: --accept-license
